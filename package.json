@@ -1,0 +1,37 @@
+{
+  "name": "rm-calendar",
+  "version": "1.0.0",
+  "description": "react mobile calendar",
+  "main": "index.js",
+  "directories": {
+    "example": "example",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/longlongago2/rm-calendar.git"
+  },
+  "keywords": [
+    "react",
+    "mobile",
+    "calendar"
+  ],
+  "author": "longlongago2",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/longlongago2/rm-calendar/issues"
+  },
+  "homepage": "https://github.com/longlongago2/rm-calendar#readme",
+  "devDependencies": {
+    "babel-eslint": "^9.0.0",
+    "eslint": "^5.10.0",
+    "eslint-config-react-app": "^3.0.5",
+    "eslint-plugin-flowtype": "^2.50.3",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1"
+  }
+}
