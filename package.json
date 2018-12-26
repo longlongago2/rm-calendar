@@ -8,7 +8,9 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "webpack-dev-server --env.development --build-type=dev",
+    "dist": "rimraf dist && webpack --env.production --build-type=dist",
+    "lib": "rimraf lib && webpack --env.production --build-type=lib"
   },
   "repository": {
     "type": "git",
@@ -26,12 +28,42 @@
   },
   "homepage": "https://github.com/longlongago2/rm-calendar#readme",
   "devDependencies": {
+    "@babel/core": "^7.2.2",
     "babel-eslint": "^9.0.0",
+    "babel-loader": "^8.0.4",
+    "babel-preset-react-app": "^7.0.0",
+    "chalk": "^2.4.1",
+    "clean-webpack-plugin": "^1.0.0",
+    "css-loader": "^2.0.2",
     "eslint": "^5.10.0",
     "eslint-config-react-app": "^3.0.5",
     "eslint-plugin-flowtype": "^2.50.3",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
-    "eslint-plugin-react": "^7.11.1"
-  }
+    "eslint-plugin-react": "^7.11.1",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "less": "^3.9.0",
+    "less-loader": "^4.1.0",
+    "mini-css-extract-plugin": "^0.5.0",
+    "postcss-flexbugs-fixes": "^4.1.0",
+    "postcss-loader": "^3.0.0",
+    "postcss-preset-env": "^6.5.0",
+    "prop-types": "^15.6.2",
+    "quick-local-ip": "^1.0.7",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-hot-loader": "^4.6.3",
+    "rimraf": "^2.6.2",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.28.2",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.13",
+    "webpack-merge": "^4.1.5"
+  },
+  "browserslist": [
+    "last 1 version",
+    "> 1%",
+    "not dead"
+  ]
 }

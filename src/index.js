@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import style from './index.less';
 
 export default class RMCalendar extends Component {
   static propTypes = {
-    prop: PropTypes
-  }
+    text: PropTypes.string.isRequired
+  };
+
+  static defaultProps = {
+    text: 'example'
+  };
 
   render() {
-    return (
-      <div>
-
-      </div>
-    );
+    const { text } = this.props;
+    return <div className={style.container}>{text}</div>;
   }
 }
