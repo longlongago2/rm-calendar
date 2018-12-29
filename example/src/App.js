@@ -32,7 +32,7 @@ class App extends Component {
           ]
         },
         {
-          date: '2018-12-29',
+          date: '2018-12-26',
           title: '南京大区通道',
           content: [
             {
@@ -59,15 +59,38 @@ class App extends Component {
     };
     this.handleCellClick = this._handleCellClick.bind(this);
     this.handleModeChange = this._handleModeChange.bind(this);
+    this.handleUpdateSchedule = this._handleUpdateSchedule.bind(this);
   }
+
   _handleCellClick(item) {
     console.log(item);
   }
+
   _handleModeChange() {
     this.setState(state => ({
       mode: state.mode === 'month' ? 'week' : 'month'
     }));
   }
+
+  _handleUpdateSchedule() {
+    this.setState({
+      schedule: [
+        {
+          date: '2018-12-29',
+          title: '南京通道',
+          content: [
+            {
+              text: '09:00-12:00'
+            },
+            {
+              text: '13:30-18:00'
+            }
+          ]
+        }
+      ]
+    });
+  }
+
   render() {
     const { mode } = this.state;
     return (
@@ -77,13 +100,18 @@ class App extends Component {
           value={`切换${mode === 'month' ? 'week' : 'month'}模式`}
           onClick={this.handleModeChange}
         />
+        <input
+          type="button"
+          value="更新schedule"
+          onClick={this.handleUpdateSchedule}
+        />
         <RMCalendar
           date={new Date(2018, 11, 30)}
           type={this.state.mode}
           width="100%"
           locale="zh-cn"
           firstDayOfWeek={0}
-          schedule={this.state.schedule}
+          schedule={this.state.schedule.concat()}
           onCellClick={this.handleCellClick}
         />
       </div>

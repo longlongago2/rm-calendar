@@ -42,17 +42,17 @@
           justify-content: center;
           align-items: center;
           &.dot:after {
-              content: "";
-              position: absolute;
-              bottom: 10%;
-              left: 0;
-              right: 0;
-              margin: auto;
-              width: 4px;
-              height: 4px;
-              border-radius: 50%;
-              background: @dot-color;
-            }
+            content: "";
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            right: 0;
+            margin: auto;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: @dot-color;
+          }
           .selected {
             position: absolute;
             padding: 0;
@@ -62,14 +62,14 @@
             justify-content: center;
             align-items: center;
             top: 0;
-            left: 0;
+            left: 1px;
             right: 0;
             bottom: 0;
+            border: 1px solid #ccc;
             margin: auto;
             height: 90%;
             width: 90%;
             font-style: normal;
-            border: 1px solid #ccc;
             border-radius: 50%;
             box-sizing: border-box;
             &.today {

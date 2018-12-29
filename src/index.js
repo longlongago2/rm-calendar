@@ -240,6 +240,8 @@ export default class RMCalendar extends Component {
       month: state.date.getMonth(),
       day: state.date.getDate()
     });
+    const propsSchedule = JSON.stringify(props.schedule);
+    const stateSchedule = JSON.stringify(state.schedule);
     if (propsDate !== stateDate) {
       // 对比时间：只精确到天，否则毫秒永远不相等
       // 触发 date 本身和 date 相关的 state 更新，以下相同
@@ -275,8 +277,8 @@ export default class RMCalendar extends Component {
         props.schedule
       );
     }
-    if (props.schedule.toString() !== state.schedule.toString()) {
-      // 对比数组：转化成字符串
+    if (propsSchedule !== stateSchedule) {
+      // 对比数组：转化成json字符串
       newState.schedule = props.schedule;
       newState.dataOfBoard = TC.getComputedDataOfBoard(
         props.date,
@@ -322,7 +324,6 @@ export default class RMCalendar extends Component {
   }
 
   render() {
-    console.log(this.state);
     const { width, locale } = this.props; // 非活动的属性，内部状态不随props变化而更新
     const {
       type,
@@ -335,14 +336,17 @@ export default class RMCalendar extends Component {
     const dateCellClassName = item =>
       cx('date-cell', {
         gray: item.monthIndex !== 0,
-        dot: JSON.stringify(selectDate) !==
-          JSON.stringify({
-            year: item.year,
-            month: item.month,
-            day: item.day
-          }) && !item.today && item.data
+        dot:
+          JSON.stringify(selectDate) !==
+            JSON.stringify({
+              year: item.year,
+              month: item.month,
+              day: item.day
+            }) &&
+          !item.today &&
+          item.data
       });
-    const dateCellClassNamePlus = item =>
+    const dateCellClassNameSelected = item =>
       cx('selected', {
         today: item.today,
         dot: !item.today && item.data,
@@ -380,7 +384,7 @@ export default class RMCalendar extends Component {
                       }}>
                       {item.day}
                       {item.today && (
-                        <i className={dateCellClassNamePlus(item)}>
+                        <i className={dateCellClassNameSelected(item)}>
                           {item.day}
                         </i>
                       )}
@@ -391,7 +395,7 @@ export default class RMCalendar extends Component {
                           day: item.day
                         }) &&
                         !item.today && (
-                        <i className={dateCellClassNamePlus(item)}>
+                        <i className={dateCellClassNameSelected(item)}>
                           {item.day}
                         </i>
                       )}
