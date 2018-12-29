@@ -420,7 +420,7 @@ export default class RMCalendar extends Component {
                       }}>
                       {item.day}
                       {item.today && (
-                        <i className={`${styles.selected} ${styles.today}`}>
+                        <i className={dateCellClassNameSelected(item)}>
                           {item.day}
                         </i>
                       )}
@@ -431,7 +431,9 @@ export default class RMCalendar extends Component {
                           day: item.day
                         }) &&
                         !item.today && (
-                        <i className={styles.selected}>{item.day}</i>
+                        <i className={dateCellClassNameSelected(item)}>
+                          {item.day}
+                        </i>
                       )}
                     </div>
                   </td>
