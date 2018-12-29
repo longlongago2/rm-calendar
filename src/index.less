@@ -1,3 +1,5 @@
+@import "./theme-variables.less";
+
 .container {
   width: 100%;
   height: auto;
@@ -6,4 +8,108 @@
   font-family: "Microsoft YaHei", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  border-collapse: collapse;
+  table-layout: fixed;
+  word-break: break-all;
+  th,
+  td {
+    padding: 0;
+    margin: 0;
+  }
+  > thead {
+    font: 11px/30px "Microsoft YaHei", sans-serif;
+    color: lighten(@font-color, 20%);
+    > tr {
+      border-bottom: 1px solid #f2f2f2;
+    }
+  }
+  > tbody {
+    font: 14px Helvetica, Arial, "Microsoft YaHei", sans-serif;
+    color: @font-color;
+    cursor: default;
+    > tr {
+      width: 100%;
+      height: auto;
+      vertical-align: middle;
+      > td {
+        background: #fff;
+        .date-cell {
+          position: relative;
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          &.dot:after {
+              content: "";
+              position: absolute;
+              bottom: 10%;
+              left: 0;
+              right: 0;
+              margin: auto;
+              width: 4px;
+              height: 4px;
+              border-radius: 50%;
+              background: @dot-color;
+            }
+          .selected {
+            position: absolute;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            height: 90%;
+            width: 90%;
+            font-style: normal;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            box-sizing: border-box;
+            &.today {
+              color: #fff;
+              background: @primary-color;
+              box-shadow: 0 1px 3px 1px lighten(@primary-color, 30%);
+            }
+            &.dot-white:after {
+              content: "";
+              position: absolute;
+              bottom: 4px;
+              left: 0;
+              right: 0;
+              margin: auto;
+              width: 4px;
+              height: 4px;
+              border-radius: 50%;
+              background: lighten(@dot-color, 90%);
+            }
+            &.dot:after {
+              content: "";
+              position: absolute;
+              bottom: 4px;
+              left: 0;
+              right: 0;
+              margin: auto;
+              width: 4px;
+              height: 4px;
+              border-radius: 50%;
+              background: @dot-color;
+            }
+          }
+        }
+      }
+    }
+  }
+  .gray {
+    opacity: 0.4;
+  }
+  .today {
+    background: @primary-color;
+  }
 }

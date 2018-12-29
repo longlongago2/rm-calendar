@@ -1,0 +1,22 @@
+@import "./theme-variables.less";
+
+.container {
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family: "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  border-collapse: collapse;
+  table-layout: fixed;
+  word-break: break-all;
+  > thead {
+    font: 11px/30px "Microsoft YaHei", sans-serif;
+    color: lighten(@font-color, 20%);
+    > tr {
+      border-bottom: 1px solid #f2f2f2;
+    }
+  }
+}

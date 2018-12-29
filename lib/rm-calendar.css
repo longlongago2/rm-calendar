@@ -1,0 +1,21 @@
+.src-index__container--3XCPZ {
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family: "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  border-collapse: collapse;
+  table-layout: fixed;
+  word-break: break-all;
+}
+.src-index__container--3XCPZ > thead {
+  font: 11px/30px "Microsoft YaHei", sans-serif;
+  color: #999999;
+}
+.src-index__container--3XCPZ > thead > tr {
+  border-bottom: 1px solid #f2f2f2;
+}
+

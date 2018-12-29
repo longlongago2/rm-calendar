@@ -4,6 +4,7 @@ const log = console.log;
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const webpack = require('webpack');
 const localIP = require('quick-local-ip').getLocalIP4();
@@ -65,7 +66,7 @@ module.exports = function(env, argv) {
         {
           test: /\.css$/,
           use: [
-            buildType === 'dist' ? MiniCssExtractPlugin.loader : 'style-loader',
+            buildType !== 'dev' ? MiniCssExtractPlugin.loader : 'style-loader',
             {
               loader: 'css-loader',
               options: { importLoaders: 1, modules: true }
@@ -82,7 +83,7 @@ module.exports = function(env, argv) {
         {
           test: /\.less$/,
           use: [
-            buildType === 'dist' ? MiniCssExtractPlugin.loader : 'style-loader',
+            buildType !== 'dev' ? MiniCssExtractPlugin.loader : 'style-loader',
             {
               loader: 'css-loader',
               options: {
@@ -102,7 +103,12 @@ module.exports = function(env, argv) {
           ]
         }
       ]
-    }
+    },
+    plugins: [
+      new MiniCssExtractPlugin({
+        filename: '[name].css'
+      })
+    ]
   };
 
   // dist 配置
@@ -117,18 +123,8 @@ module.exports = function(env, argv) {
         library: 'RMCalendar',
         libraryTarget: 'var'
       },
-      plugins: [
-        new MiniCssExtractPlugin({
-          filename: '[name].css'
-        })
-      ],
       externals: {
-        react: {
-          commonjs: 'react',
-          commonjs2: 'react',
-          amd: 'react',
-          root: 'React' // 指向全局变量
-        }
+        react: 'React'
       }
     });
   }
@@ -151,8 +147,29 @@ module.exports = function(env, argv) {
           commonjs2: 'react',
           amd: 'react',
           root: 'React' // 指向全局变量
+        },
+        moment: {
+          commonjs: 'moment',
+          commonjs2: 'moment',
+          amd: 'moment',
+          root: 'moment' // 指向全局变量
+        },
+        classnames: {
+          commonjs: 'classnames',
+          commonjs2: 'classnames',
+          amd: 'classnames',
+          root: 'classNames' // 指向全局变量
         }
-      }
+      },
+      plugins: [
+        new CopyWebpackPlugin([
+          {
+            from: './src/*.less',
+            to: './theme-less',
+            flatten: true
+          }
+        ])
+      ]
     });
   }
 

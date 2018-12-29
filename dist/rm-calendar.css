@@ -6,5 +6,48 @@
   font-family: "Microsoft YaHei", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  border-collapse: collapse;
+  table-layout: fixed;
+  word-break: break-all;
+}
+.src-index__container--3XCPZ th,
+.src-index__container--3XCPZ td {
+  padding: 0;
+  margin: 0;
+}
+.src-index__container--3XCPZ > thead {
+  font: 11px/30px "Microsoft YaHei", sans-serif;
+  color: #999999;
+}
+.src-index__container--3XCPZ > thead > tr {
+  border-bottom: 1px solid #f2f2f2;
+}
+.src-index__container--3XCPZ > tbody {
+  font: 14px "Microsoft YaHei", sans-serif;
+  color: #666;
+}
+.src-index__container--3XCPZ > tbody > tr {
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+.src-index__container--3XCPZ > tbody > tr > td {
+  background: #fff;
+}
+.src-index__container--3XCPZ > tbody > tr > td .src-index__dateCell--6d7vo {
+  height: 100px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.src-index__container--3XCPZ .src-index__gray--_tjMt {
+  opacity: 0.4;
+}
+.src-index__container--3XCPZ .src-index__today--8gtr6 {
+  background: #2472C8;
 }
 

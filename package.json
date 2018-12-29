@@ -2,7 +2,7 @@
   "name": "rm-calendar",
   "version": "1.0.0",
   "description": "react mobile calendar",
-  "main": "index.js",
+  "main": "lib/rm-calendar.js",
   "directories": {
     "example": "example",
     "lib": "lib"
@@ -34,6 +34,7 @@
     "babel-preset-react-app": "^7.0.0",
     "chalk": "^2.4.1",
     "clean-webpack-plugin": "^1.0.0",
+    "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^2.0.2",
     "eslint": "^5.10.0",
     "eslint-config-react-app": "^3.0.5",
@@ -51,7 +52,6 @@
     "postcss-preset-env": "^6.5.0",
     "prop-types": "^15.6.2",
     "quick-local-ip": "^1.0.7",
-    "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-hot-loader": "^4.6.3",
     "rimraf": "^2.6.2",
@@ -65,5 +65,10 @@
     "last 1 version",
     "> 1%",
     "not dead"
-  ]
+  ],
+  "dependencies": {
+    "classnames": "^2.2.6",
+    "moment": "^2.23.0",
+    "react": "^16.7.0"
+  }
 }
