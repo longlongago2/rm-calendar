@@ -15,47 +15,47 @@ class App extends Component {
           title: '送货通道',
           content: [
             {
-              text: '07:00-11:00'
+              text: '07:00-11:00',
             },
             {
-              text: '14:00-18:00'
-            }
-          ]
+              text: '14:00-18:00',
+            },
+          ],
         },
         {
           date: '2018-12-02',
           title: '发货通道',
           content: [
             {
-              text: '休息'
-            }
-          ]
+              text: '休息',
+            },
+          ],
         },
         {
           date: '2018-12-26',
           title: '南京大区通道',
           content: [
             {
-              text: '09:00-12:00'
+              text: '09:00-12:00',
             },
             {
-              text: '13:30-18:00'
-            }
-          ]
+              text: '13:30-18:00',
+            },
+          ],
         },
         {
           date: '2018-12-30',
           title: '南京通道',
           content: [
             {
-              text: '09:00-12:00'
+              text: '09:00-12:00',
             },
             {
-              text: '13:30-18:00'
-            }
-          ]
-        }
-      ]
+              text: '13:30-18:00',
+            },
+          ],
+        },
+      ],
     };
     this.handleCellClick = this._handleCellClick.bind(this);
     this.handleModeChange = this._handleModeChange.bind(this);
@@ -63,12 +63,13 @@ class App extends Component {
   }
 
   _handleCellClick(item) {
-    console.log(item);
+    const { mode } = this.state;
+    console.log(item, mode);
   }
 
   _handleModeChange() {
     this.setState(state => ({
-      mode: state.mode === 'month' ? 'week' : 'month'
+      mode: state.mode === 'month' ? 'week' : 'month',
     }));
   }
 
@@ -80,19 +81,19 @@ class App extends Component {
           title: '南京通道',
           content: [
             {
-              text: '09:00-12:00'
+              text: '09:00-12:00',
             },
             {
-              text: '13:30-18:00'
-            }
-          ]
-        }
-      ]
+              text: '13:30-18:00',
+            },
+          ],
+        },
+      ],
     });
   }
 
   render() {
-    const { mode } = this.state;
+    const { mode, schedule } = this.state;
     return (
       <div className={style.container}>
         <input
@@ -100,18 +101,14 @@ class App extends Component {
           value={`切换${mode === 'month' ? 'week' : 'month'}模式`}
           onClick={this.handleModeChange}
         />
-        <input
-          type="button"
-          value="更新schedule"
-          onClick={this.handleUpdateSchedule}
-        />
+        <input type="button" value="更新schedule" onClick={this.handleUpdateSchedule} />
         <RMCalendar
           date={new Date(2018, 11, 30)}
-          type={this.state.mode}
+          type={mode}
           width="100%"
           locale="zh-cn"
           firstDayOfWeek={0}
-          schedule={this.state.schedule.concat()}
+          schedule={schedule}
           onCellClick={this.handleCellClick}
         />
       </div>

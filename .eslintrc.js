@@ -3,23 +3,28 @@ module.exports = {
     browser: true,
     commonjs: true,
     es6: true,
-    node: true
+    node: true,
   },
-  extends: ['react-app', 'plugin:jsx-a11y/recommended'],
+  extends: ['airbnb'],
   parserOptions: {
     ecmaFeatures: {
-      jsx: true
+      jsx: true,
     },
     ecmaVersion: 2018,
-    sourceType: 'module'
+    sourceType: 'module',
   },
-  plugins: ['jsx-a11y'],
+  plugins: ['react'],
   rules: {
     indent: ['error', 2],
     quotes: ['error', 'single'],
     semi: ['error', 'always'],
-    'linebreak-style': ['error', 'unix'],
+    'linebreak-style': ['off'],
+    'import/no-extraneous-dependencies': ['off'],
+    'no-plusplus': ['off'],
+    'no-underscore-dangle': ['off'],
+    'react/jsx-filename-extension': ['off'],
     'jsx-a11y/click-events-have-key-events': ['off'],
-    'jsx-a11y/no-noninteractive-element-interactions': ['off']
-  }
+    'jsx-a11y/no-noninteractive-element-interactions': ['off'],
+    'react/no-unused-state': ['warn'],
+  },
 };

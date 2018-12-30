@@ -10,16 +10,13 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   border-collapse: collapse;
+  border: 0;
   table-layout: fixed;
   word-break: break-all;
-  th,
-  td {
-    padding: 0;
-    margin: 0;
-  }
   > thead {
     font: 11px/30px "Microsoft YaHei", sans-serif;
     color: lighten(@font-color, 20%);
+    background: @thead-color;
     > tr {
       border-bottom: 1px solid #f2f2f2;
     }
@@ -27,13 +24,13 @@
   > tbody {
     font: 14px Helvetica, Arial, "Microsoft YaHei", sans-serif;
     color: @font-color;
+    background: @tbody-color;
     cursor: default;
     > tr {
       width: 100%;
       height: auto;
       vertical-align: middle;
       > td {
-        background: #fff;
         .date-cell {
           position: relative;
           width: 100%;
@@ -44,7 +41,7 @@
           &.dot:after {
             content: "";
             position: absolute;
-            bottom: 5px;
+            bottom: 15%;
             left: 0;
             right: 0;
             margin: auto;
@@ -62,13 +59,11 @@
             justify-content: center;
             align-items: center;
             top: 0;
-            left: 1px;
+            left: 0;
             right: 0;
             bottom: 0;
-            border: 1px solid #ccc;
             margin: auto;
-            height: 90%;
-            width: 90%;
+            border: 1px solid #ccc;
             font-style: normal;
             border-radius: 50%;
             box-sizing: border-box;
@@ -107,7 +102,7 @@
     }
   }
   .gray {
-    opacity: 0.4;
+    opacity: 0.5;
   }
   .today {
     background: @primary-color;
