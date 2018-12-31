@@ -1,11 +1,82 @@
-@import "./theme-variables.less";
+@import './theme-variables.less';
 
+.top-bar {
+  padding: 5px 10px 0 10px;
+  background: @thead-color;
+  .date {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-end;
+    box-sizing: border-box;
+    .month {
+      font: 25px Arial, 'Microsoft YaHei', sans-serif;
+      color: #000;
+      transform: scaleX(0.9);
+    }
+    .week-year {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      font: 12px/15px Arial, 'Microsoft YaHei', sans-serif;
+      .year:after {
+        content: '';
+        display: inline-block;
+        margin-left: 5px;
+        width: 6px;
+        height: 6px;
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAQCAQAAABNGswdAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAAA4QAAAOEAHQCiXcAAAAHdElNRQffBhYTDiRpbi3PAAAA8ElEQVQoz5XRyypEAQDG8d/MWWkyCxSlpLMTyTUPMI8y47pR3scbUDZKiZo5pDRZKE1JRuIBlPvZWDBnLmjO/Jdf/VZfplCwbl6ftMVqdjKFC7OpSaOnrKGeEfmsbXHPbDcIq3KWZHpAezaDMHYqbzE13LfhMQiJRQYspIIH1jwQ1IV8igya6woPrbqHgBA+RIa7XHFsxR0cCag34YiZf1HZsttvREAC31WMmv4TnSi5aaAflsA3kTFTv9CZkusmSlgCX0XGTbahc0W1VtTCEviiIjSRzFVFV+2ojbXAKIFVJZedqIMl8Fkkp1/Z1l+ILwlPRTMjGZ+TAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE4LTA2LTI4VDIyOjEwOjQxKzA4OjAwXvz+0wAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxNS0wNi0yMlQxOToxNDozNiswODowMHT5IBYAAABDdEVYdHNvZnR3YXJlAC91c3IvbG9jYWwvaW1hZ2VtYWdpY2svc2hhcmUvZG9jL0ltYWdlTWFnaWNrLTcvL2luZGV4Lmh0bWy9tXkKAAAAiHRFWHRzdmc6Y29tbWVudAA/eG1sIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IlVURi04IiBzdGFuZGFsb25lPSJubyI/CiBHZW5lcmF0b3I6IFNrZXRjaCAzLjAuMyAoNzg5MSkgLSBodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2gg0LwiXAAAAA50RVh0c3ZnOnRpdGxlADEyMzcxsBVNAAAAGHRFWHRUaHVtYjo6RG9jdW1lbnQ6OlBhZ2VzADGn/7svAAAAGHRFWHRUaHVtYjo6SW1hZ2U6OkhlaWdodAAxMTUW4G7+AAAAF3RFWHRUaHVtYjo6SW1hZ2U6OldpZHRoADE5ODN5yBYAAAAZdEVYdFRodW1iOjpNaW1ldHlwZQBpbWFnZS9wbmc/slZOAAAAF3RFWHRUaHVtYjo6TVRpbWUAMTQzNDk3MTY3NtkF0egAAAARdEVYdFRodW1iOjpTaXplADE2MzlCaCuWDAAAAGJ0RVh0VGh1bWI6OlVSSQBmaWxlOi8vL2hvbWUvd3d3cm9vdC9uZXdzaXRlL3d3dy5lYXN5aWNvbi5uZXQvY2RuLWltZy5lYXN5aWNvbi5jbi9zcmMvMTE4OTgvMTE4OTg1Mi5wbmeOs9/jAAAAAElFTkSuQmCC)
+          center no-repeat;
+        background-size: 6px 6px;
+      }
+    }
+  }
+  .options {
+    width: 100%;
+    height: 50px;
+    padding: 10px 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 12px;
+    color: @font-color;
+    .opt {
+      width: 50px;
+      height: 50px;
+      margin: 0 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      i {
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+        border-radius: 50%;
+        background: #ccc;
+        color: #fff;
+        font-size: 14px;
+        font-style: italic;
+        font-family: 'Times New Roman', Times, serif;
+        margin: 0 0 3px 0;
+        &.selected {
+          background: @primary-color;
+        }
+      }
+    }
+  }
+}
 .container {
   width: 100%;
   height: auto;
   box-sizing: border-box;
   font-size: 14px;
-  font-family: "Microsoft YaHei", sans-serif;
+  font-family: 'Microsoft YaHei', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -14,7 +85,7 @@
   table-layout: fixed;
   word-break: break-all;
   > thead {
-    font: 11px/30px "Microsoft YaHei", sans-serif;
+    font: 12px/30px 'Microsoft YaHei', sans-serif;
     color: lighten(@font-color, 20%);
     background: @thead-color;
     > tr {
@@ -22,7 +93,7 @@
     }
   }
   > tbody {
-    font: 14px Helvetica, Arial, "Microsoft YaHei", sans-serif;
+    font: 14px Helvetica, Arial, 'Microsoft YaHei', sans-serif;
     color: @font-color;
     background: @tbody-color;
     cursor: default;
@@ -31,63 +102,44 @@
       height: auto;
       vertical-align: middle;
       > td {
-        .date-cell {
+        .cell {
           position: relative;
           width: 100%;
+          height: auto;
           display: flex;
           flex-direction: row;
           justify-content: center;
           align-items: center;
-          &.dot:after {
-            content: "";
-            position: absolute;
-            bottom: 15%;
-            left: 0;
-            right: 0;
-            margin: auto;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: @dot-color;
-          }
-          .selected {
-            position: absolute;
-            padding: 0;
-            margin: 0;
+          .circle {
+            position: relative;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: row;
             justify-content: center;
             align-items: center;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            margin: auto;
-            border: 1px solid #ccc;
-            font-style: normal;
             border-radius: 50%;
+            border: 0.5px solid rgba(0, 0, 0, 0);
             box-sizing: border-box;
+            transition: all 0.3ms linear;
             &.today {
-              color: #fff;
+              color: @primary-color;
+            }
+            &.selected {
+              border: 0.5px solid lighten(@font-color, 60%);
+            }
+            &.gray {
+              opacity: 0.4;
+            }
+            &.today-selected {
+              color: lighten(@primary-color, 80%);
               background: @primary-color;
               box-shadow: 0 1px 3px 1px lighten(@primary-color, 30%);
             }
-            &.dot-white:after {
-              content: "";
-              position: absolute;
-              bottom: 4px;
-              left: 0;
-              right: 0;
-              margin: auto;
-              width: 4px;
-              height: 4px;
-              border-radius: 50%;
-              background: lighten(@dot-color, 90%);
-            }
             &.dot:after {
-              content: "";
+              content: '';
               position: absolute;
-              bottom: 4px;
+              bottom: 6px;
               left: 0;
               right: 0;
               margin: auto;
@@ -96,15 +148,24 @@
               border-radius: 50%;
               background: @dot-color;
             }
+            .title {
+              display: inline-block;
+              width: 100%;
+              height: auto;
+              position: absolute;
+              top: -2px;
+              left: 0;
+              right: 0;
+              margin: auto;
+              font-size: 12px;
+              transform: scale(0.8);
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
           }
         }
       }
     }
-  }
-  .gray {
-    opacity: 0.5;
-  }
-  .today {
-    background: @primary-color;
   }
 }

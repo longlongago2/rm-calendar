@@ -18,18 +18,17 @@ export default class RMCalendar extends Component {
     const day = date.getDate();
     const TC = RMCalendar;
     this.state = {
-      date, // 用作和 props 比对
-      type, // 用作和 props 比对
-      firstDayOfWeek, // 用作和 props 比对
-      schedule, // 以上都用作和props比对,内部不宜setState,只在getDerivedStateFromProps中维护
+      prevProps: props, // 用于比对props变化,内部不宜setState,只在getDerivedStateFromProps中维护
+      type,
       cellHeight: 0, // 单元格高度
       weekRowIndex: TC.getWeekRowOfBoard(date, firstDayOfWeek), // 当前日期所在周在当前日历面板中的行数
-      dataOfWeek: TC.getDataOfWeek(firstDayOfWeek), // 面板列（周）数据
+      dataOfHeader: TC.getDataOfHeader(firstDayOfWeek), // 面板列（周）数据
       dataOfBoard: TC.getComputedDataOfBoard(date, firstDayOfWeek, schedule), // 合成面板数据集
       selectDate: { year, month, day }, // 选中日期:默认是属性的date
     };
     this.handleCellClick = this._handleCellClick.bind(this);
     this.handleResize = this._handleResize.bind(this);
+    this.handleChangeType = this._handleChangeType.bind(this);
   }
 
   static getDaysOfPerMonth(date) {
@@ -42,7 +41,7 @@ export default class RMCalendar extends Component {
     return days;
   }
 
-  static getDataOfWeek(firstDayOfWeek) {
+  static getDataOfHeader(firstDayOfWeek) {
     // 获取周排列数据
     const start = firstDayOfWeek;
     const week = [
@@ -93,7 +92,7 @@ export default class RMCalendar extends Component {
     const month = date.getMonth();
     const day = new Date(year, month, 1).getDay();
     const daysOfPerMonth = RMCalendar.getDaysOfPerMonth(date);
-    const weekCharacter = RMCalendar.getDataOfWeek(firstDayOfWeek);
+    const weekCharacter = RMCalendar.getDataOfHeader(firstDayOfWeek);
     const theMonthNumOfBoard = daysOfPerMonth[month];
     let preMonthNumOfBoard = 0; // 上月组成天数
     for (let i = 0; i < weekCharacter.length; i++) {
@@ -208,24 +207,27 @@ export default class RMCalendar extends Component {
   static getDerivedStateFromProps(props, state) {
     // 初始化和每次setState都会触发此钩子函数：可以用于监听props
     const TC = RMCalendar;
-    const newState = Object.assign({}, state);
+    let update = false;
     // 活动属性：date,type,firstDayOfWeek,schedule 活动属性变化会触发一系列内部更新
+    const newState = { prevProps: Object.assign({}, state.prevProps) };
     const propsDate = JSON.stringify({
       year: props.date.getFullYear(),
       month: props.date.getMonth(),
       day: props.date.getDate(),
     });
-    const stateDate = JSON.stringify({
-      year: state.date.getFullYear(),
-      month: state.date.getMonth(),
-      day: state.date.getDate(),
+    const prevPropsDate = JSON.stringify({
+      year: state.prevProps.date.getFullYear(),
+      month: state.prevProps.date.getMonth(),
+      day: state.prevProps.date.getDate(),
     });
     const propsSchedule = JSON.stringify(props.schedule);
-    const stateSchedule = JSON.stringify(state.schedule);
-    if (propsDate !== stateDate) {
-      // 对比时间：只精确到天，否则毫秒永远不相等
-      // 触发 date 本身和 date 相关的 state 更新，以下相同
-      newState.date = props.date;
+    const prevPropsSchedule = JSON.stringify(state.prevProps.schedule);
+    if (propsDate !== prevPropsDate) {
+      // 对比日期只精确到天，否则毫秒时间永远不相等
+      update = true;
+      // change prevProps
+      newState.prevProps.date = props.date;
+      // change state
       newState.weekRowIndex = TC.getWeekRowOfBoard(props.date, props.firstDayOfWeek);
       newState.dataOfBoard = TC.getComputedDataOfBoard(
         props.date,
@@ -238,12 +240,19 @@ export default class RMCalendar extends Component {
         day: props.date.getDate(),
       };
     }
-    if (props.type !== state.type) {
+    if (props.type !== state.prevProps.type) {
+      update = true;
+      // change prevProps
+      newState.prevProps.type = props.type;
+      // change state
       newState.type = props.type;
     }
-    if (props.firstDayOfWeek !== state.firstDayOfWeek) {
-      newState.firstDayOfWeek = props.firstDayOfWeek;
-      newState.dataOfWeek = TC.getDataOfWeek(props.firstDayOfWeek);
+    if (props.firstDayOfWeek !== state.prevProps.firstDayOfWeek) {
+      update = true;
+      // change prevProps
+      newState.prevProps.firstDayOfWeek = props.firstDayOfWeek;
+      // change state
+      newState.dataOfHeader = TC.getDataOfHeader(props.firstDayOfWeek);
       newState.weekRowIndex = TC.getWeekRowOfBoard(props.date, props.firstDayOfWeek);
       newState.dataOfBoard = TC.getComputedDataOfBoard(
         props.date,
@@ -251,16 +260,20 @@ export default class RMCalendar extends Component {
         props.schedule,
       );
     }
-    if (propsSchedule !== stateSchedule) {
+    if (propsSchedule !== prevPropsSchedule) {
       // 对比数组：转化成json字符串
-      newState.schedule = props.schedule;
+      update = true;
+      // change prevProps
+      newState.prevProps.schedule = props.schedule;
+      // change state
       newState.dataOfBoard = TC.getComputedDataOfBoard(
         props.date,
         props.firstDayOfWeek,
         props.schedule,
       );
     }
-    return newState;
+    if (update) return newState;
+    return null;
   }
 
   componentDidMount() {
@@ -304,106 +317,136 @@ export default class RMCalendar extends Component {
     });
   }
 
+  _handleChangeType(type) {
+    this.setState((state) => {
+      if (state.type !== type) return { type };
+      return null;
+    });
+  }
+
   render() {
-    const { width, locale } = this.props; // 非活动的属性，内部状态不随props变化而更新
+    const { width, locale, firstDayOfWeek } = this.props; // 非活动的属性，内部状态不随props变化而更新
     const {
-      type, dataOfWeek, dataOfBoard, weekRowIndex, selectDate, cellHeight,
+      type, dataOfHeader, dataOfBoard, weekRowIndex, selectDate, cellHeight,
     } = this.state;
-    // TODO:重新设计cell选中内容
-    const dateCellClassName = item => cx('date-cell', {
-      gray: item.monthIndex !== 0,
-      dot:
-          JSON.stringify(selectDate)
-            !== JSON.stringify({
-              year: item.year,
-              month: item.month,
-              day: item.day,
-            })
-          && !item.today
-          && item.data,
-    });
-    const dateCellClassNameSelected = item => cx('selected', {
-      today: item.today,
-      dot: !item.today && item.data,
-      'dot-white': item.today && item.data,
-    });
+    const styleCellBody = (item) => {
+      const itemDate = {
+        year: item.year,
+        month: item.month,
+        day: item.day,
+      };
+      return cx('circle', {
+        today: item.today,
+        gray: item.monthIndex !== 0,
+        selected: JSON.stringify(selectDate) === JSON.stringify(itemDate) && !item.today,
+        'today-selected': JSON.stringify(selectDate) === JSON.stringify(itemDate) && item.today,
+        dot: item.data,
+      });
+    };
     return (
-      <table
-        ref={this.calendar}
-        className={styles.container}
-        cellSpacing="0"
-        cellPadding="5"
-        style={{ width: typeof width === 'number' ? `${width}px` : width }}
-      >
-        <thead>
-          <tr>
-            {Array.isArray(dataOfWeek)
-              && dataOfWeek.length > 0
-              && dataOfWeek.map(item => <td key={item.day}>{item[locale] || item['zh-cn']}</td>)}
-          </tr>
-        </thead>
-        <tbody>
-          {type === 'month'
-            && [0, 1, 2, 3, 4, 5].map((row, i) => (
-              <tr key={row}>
-                {dataOfBoard.slice(i * 7, (i + 1) * 7).map(item => (
+      <>
+        <div className={styles['top-bar']}>
+          <div className={styles.date}>
+            <div className={styles.month}>{`${selectDate.month + 1}月`}</div>
+            <div className={styles['week-year']}>
+              <div>
+                {`${moment(new Date(selectDate.year, selectDate.month, selectDate.day)).format(
+                  firstDayOfWeek === 0 ? 'ww' : 'WW',
+                )}周`}
+              </div>
+              <div className={styles.year}>{`${selectDate.year}年`}</div>
+            </div>
+          </div>
+          <div className={styles.options}>
+            <div
+              className={styles.opt}
+              role="button"
+              tabIndex="-1"
+              onClick={() => this.handleChangeType('month')}
+            >
+              <i className={cx({ selected: type === 'month' })}>M</i>
+              月视图
+            </div>
+            <div
+              className={styles.opt}
+              role="button"
+              tabIndex="0"
+              onClick={() => this.handleChangeType('week')}
+            >
+              <i className={cx({ selected: type === 'week' })}>W</i>
+              周视图
+            </div>
+          </div>
+        </div>
+        <table
+          ref={this.calendar}
+          className={styles.container}
+          cellSpacing="0"
+          cellPadding="5"
+          style={{ width: typeof width === 'number' ? `${width}px` : width }}
+        >
+          <thead>
+            <tr>
+              {Array.isArray(dataOfHeader)
+                && dataOfHeader.length > 0
+                && dataOfHeader.map(item => <td key={item.day}>{item[locale] || item['zh-cn']}</td>)}
+            </tr>
+          </thead>
+          <tbody>
+            {type === 'month'
+              && [0, 1, 2, 3, 4, 5].map((row, i) => (
+                <tr key={row}>
+                  {dataOfBoard.slice(i * 7, (i + 1) * 7).map(item => (
+                    <td
+                      key={item.day}
+                      title={`${item.year}-${item.month + 1}-${item.day}`}
+                      onClick={() => this.handleCellClick(item)}
+                    >
+                      <div
+                        className={styles.cell}
+                        style={{
+                          height: `${cellHeight}px`,
+                        }}
+                      >
+                        <div className={styleCellBody(item)}>
+                          {item.day}
+                          {item.data && item.data.title && (
+                            <span className={styles.title}>{item.data.title}</span>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            {type === 'week' && (
+              <tr>
+                {dataOfBoard.slice(weekRowIndex * 7, (weekRowIndex + 1) * 7).map(item => (
                   <td
                     key={item.day}
                     title={`${item.year}-${item.month + 1}-${item.day}`}
                     onClick={() => this.handleCellClick(item)}
                   >
                     <div
-                      className={dateCellClassName(item)}
+                      className={styles.cell}
                       style={{
                         height: `${cellHeight}px`,
                       }}
                     >
-                      {item.day}
-                      {item.today && <i className={dateCellClassNameSelected(item)}>{item.day}</i>}
-                      {JSON.stringify(selectDate)
-                        === JSON.stringify({
-                          year: item.year,
-                          month: item.month,
-                          day: item.day,
-                        })
-                        && !item.today && (
-                        <i className={dateCellClassNameSelected(item)}>{item.day}</i>
-                      )}
+                      <div className={styleCellBody(item)}>
+                        {item.day}
+                        {item.data && item.data.title && (
+                          <span className={styles.title}>{item.data.title}</span>
+                        )}
+                      </div>
                     </div>
                   </td>
                 ))}
               </tr>
-            ))}
-          {type === 'week' && (
-            <tr>
-              {dataOfBoard.slice(weekRowIndex * 7, (weekRowIndex + 1) * 7).map(item => (
-                <td
-                  key={item.day}
-                  title={`${item.year}-${item.month + 1}-${item.day}`}
-                  onClick={() => this.handleCellClick(item)}
-                >
-                  <div
-                    className={dateCellClassName(item)}
-                    style={{
-                      height: `${cellHeight}px`,
-                    }}
-                  >
-                    {item.day}
-                    {item.today && <i className={dateCellClassNameSelected(item)}>{item.day}</i>}
-                    {JSON.stringify(selectDate)
-                      === JSON.stringify({
-                        year: item.year,
-                        month: item.month,
-                        day: item.day,
-                      })
-                      && !item.today && <i className={dateCellClassNameSelected(item)}>{item.day}</i>}
-                  </div>
-                </td>
-              ))}
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </>
     );
   }
 }

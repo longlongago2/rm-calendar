@@ -12,7 +12,7 @@ class App extends Component {
       schedule: [
         {
           date: '2018-12-01',
-          title: '送货通道',
+          title: '班',
           content: [
             {
               text: '07:00-11:00',
@@ -24,7 +24,7 @@ class App extends Component {
         },
         {
           date: '2018-12-02',
-          title: '发货通道',
+          title: '休',
           content: [
             {
               text: '休息',
@@ -32,8 +32,16 @@ class App extends Component {
           ],
         },
         {
+          date: '2018-12-03',
+          content: [
+            {
+              text: '日程提醒',
+            },
+          ],
+        },
+        {
           date: '2018-12-26',
-          title: '南京大区通道',
+          title: '休',
           content: [
             {
               text: '09:00-12:00',
@@ -44,8 +52,8 @@ class App extends Component {
           ],
         },
         {
-          date: '2018-12-30',
-          title: '南京通道',
+          date: '2018-12-31',
+          title: '班',
           content: [
             {
               text: '09:00-12:00',
@@ -96,12 +104,6 @@ class App extends Component {
     const { mode, schedule } = this.state;
     return (
       <div className={style.container}>
-        <input
-          type="button"
-          value={`切换${mode === 'month' ? 'week' : 'month'}模式`}
-          onClick={this.handleModeChange}
-        />
-        <input type="button" value="更新schedule" onClick={this.handleUpdateSchedule} />
         <RMCalendar
           date={new Date(2018, 11, 30)}
           type={mode}
@@ -111,6 +113,16 @@ class App extends Component {
           schedule={schedule}
           onCellClick={this.handleCellClick}
         />
+        <p>
+          <input
+            type="button"
+            value={`切换${mode === 'month' ? 'week' : 'month'}模式`}
+            onClick={this.handleModeChange}
+          />
+        </p>
+        <p>
+          <input type="button" value="更新schedule" onClick={this.handleUpdateSchedule} />
+        </p>
       </div>
     );
   }
