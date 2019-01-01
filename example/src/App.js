@@ -105,12 +105,13 @@ class App extends Component {
     return (
       <div className={style.container}>
         <RMCalendar
-          date={new Date(2018, 11, 30)}
+          date={new Date()}
           type={mode}
           width="100%"
           locale="zh-cn"
           firstDayOfWeek={0}
           schedule={schedule}
+          toolbar
           onCellClick={this.handleCellClick}
         />
         <p>

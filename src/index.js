@@ -25,10 +25,12 @@ export default class RMCalendar extends Component {
       dataOfHeader: TC.getDataOfHeader(firstDayOfWeek), // 面板列（周）数据
       dataOfBoard: TC.getComputedDataOfBoard(date, firstDayOfWeek, schedule), // 合成面板数据集
       selectDate: { year, month, day }, // 选中日期:默认是属性的date
+      dropdownlist: false,
     };
     this.handleCellClick = this._handleCellClick.bind(this);
     this.handleResize = this._handleResize.bind(this);
     this.handleChangeType = this._handleChangeType.bind(this);
+    this.handleChangeMonth = this._handleChangeMonth.bind(this);
   }
 
   static getDaysOfPerMonth(date) {
@@ -252,10 +254,12 @@ export default class RMCalendar extends Component {
       // change prevProps
       newState.prevProps.firstDayOfWeek = props.firstDayOfWeek;
       // change state
+      const { year, month, day } = state.selectDate;
+      const selectDate = new Date(year, month, day);
       newState.dataOfHeader = TC.getDataOfHeader(props.firstDayOfWeek);
-      newState.weekRowIndex = TC.getWeekRowOfBoard(props.date, props.firstDayOfWeek);
+      newState.weekRowIndex = TC.getWeekRowOfBoard(selectDate, props.firstDayOfWeek);
       newState.dataOfBoard = TC.getComputedDataOfBoard(
-        props.date,
+        selectDate,
         props.firstDayOfWeek,
         props.schedule,
       );
@@ -266,8 +270,10 @@ export default class RMCalendar extends Component {
       // change prevProps
       newState.prevProps.schedule = props.schedule;
       // change state
+      const { year, month, day } = state.selectDate;
+      const selectDate = new Date(year, month, day);
       newState.dataOfBoard = TC.getComputedDataOfBoard(
-        props.date,
+        selectDate,
         props.firstDayOfWeek,
         props.schedule,
       );
@@ -324,10 +330,50 @@ export default class RMCalendar extends Component {
     });
   }
 
+  _handleChangeMonth(go) {
+    const TC = RMCalendar;
+    const { selectDate } = this.state;
+    const { year, month } = selectDate;
+    const { firstDayOfWeek, schedule } = this.props;
+    let goDate = {
+      year,
+      month,
+      day: 1,
+    };
+    if (go === 1) {
+      goDate = {
+        year: month + 1 <= 11 ? year : year + 1,
+        month: month + 1 <= 11 ? month + 1 : 0,
+        day: 1,
+      };
+    }
+    if (go === -1) {
+      goDate = {
+        year: month - 1 < 0 ? year - 1 : year,
+        month: month - 1 < 0 ? 11 : month - 1,
+        day: 1,
+      };
+    }
+    const newDate = new Date(goDate.year, goDate.month, goDate.day);
+    this.setState({
+      weekRowIndex: TC.getWeekRowOfBoard(newDate, firstDayOfWeek),
+      dataOfBoard: TC.getComputedDataOfBoard(newDate, firstDayOfWeek, schedule),
+      selectDate: goDate,
+    });
+  }
+
   render() {
-    const { width, locale, firstDayOfWeek } = this.props; // 非活动的属性，内部状态不随props变化而更新
     const {
-      type, dataOfHeader, dataOfBoard, weekRowIndex, selectDate, cellHeight,
+      width, locale, firstDayOfWeek, toolbar,
+    } = this.props; // 非活动的属性，内部状态不随props变化而更新
+    const {
+      type,
+      dataOfHeader,
+      dataOfBoard,
+      weekRowIndex,
+      selectDate,
+      cellHeight,
+      dropdownlist,
     } = this.state;
     const styleCellBody = (item) => {
       const itemDate = {
@@ -345,39 +391,74 @@ export default class RMCalendar extends Component {
     };
     return (
       <>
-        <div className={styles['top-bar']}>
-          <div className={styles.date}>
-            <div className={styles.month}>{`${selectDate.month + 1}月`}</div>
-            <div className={styles['week-year']}>
-              <div>
-                {`${moment(new Date(selectDate.year, selectDate.month, selectDate.day)).format(
-                  firstDayOfWeek === 0 ? 'ww' : 'WW',
-                )}周`}
+        {toolbar && (
+          <div className={styles['top-bar']}>
+            <div className={styles.date}>
+              <div
+                className={styles['opt-btn']}
+                role="button"
+                tabIndex="0"
+                onClick={() => this.setState(state => ({ dropdownlist: !state.dropdownlist }))}
+              >
+                <div className={styles.month}>{`${selectDate.month + 1}月`}</div>
+                <div className={styles['week-year']}>
+                  <div>
+                    {`${moment(new Date(selectDate.year, selectDate.month, selectDate.day)).format(
+                      firstDayOfWeek === 0 ? 'ww' : 'WW',
+                    )}周`}
+                  </div>
+                  <div className={cx('year', { up: !dropdownlist, down: dropdownlist })}>
+                    {`${selectDate.year}年`}
+                  </div>
+                </div>
               </div>
-              <div className={styles.year}>{`${selectDate.year}年`}</div>
+              <div className={styles['turn-btn']}>
+                <div
+                  className={cx('btn', 'up')}
+                  role="button"
+                  tabIndex="-5"
+                  onClick={() => this.handleChangeMonth(-1)}
+                />
+                <div
+                  className={cx('btn', 'down')}
+                  role="button"
+                  tabIndex="-6"
+                  onClick={() => this.handleChangeMonth(1)}
+                />
+              </div>
             </div>
+            {dropdownlist && (
+              <div className={styles.options}>
+                <div className={styles.opt} role="button" tabIndex="-1" onClick={() => alert()}>
+                  <i>月</i>
+                  选择月份
+                </div>
+                <div className={styles.opt} role="button" tabIndex="-2" onClick={() => alert()}>
+                  <i>年</i>
+                  选择年份
+                </div>
+                <div
+                  className={styles.opt}
+                  role="button"
+                  tabIndex="-3"
+                  onClick={() => this.handleChangeType('month')}
+                >
+                  <i className={cx({ selected: type === 'month' })}>M</i>
+                  月视图
+                </div>
+                <div
+                  className={styles.opt}
+                  role="button"
+                  tabIndex="-4"
+                  onClick={() => this.handleChangeType('week')}
+                >
+                  <i className={cx({ selected: type === 'week' })}>W</i>
+                  周视图
+                </div>
+              </div>
+            )}
           </div>
-          <div className={styles.options}>
-            <div
-              className={styles.opt}
-              role="button"
-              tabIndex="-1"
-              onClick={() => this.handleChangeType('month')}
-            >
-              <i className={cx({ selected: type === 'month' })}>M</i>
-              月视图
-            </div>
-            <div
-              className={styles.opt}
-              role="button"
-              tabIndex="0"
-              onClick={() => this.handleChangeType('week')}
-            >
-              <i className={cx({ selected: type === 'week' })}>W</i>
-              周视图
-            </div>
-          </div>
-        </div>
+        )}
         <table
           ref={this.calendar}
           className={styles.container}
@@ -458,6 +539,7 @@ RMCalendar.propTypes = {
   schedule: PropTypes.arrayOf(PropTypes.object),
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   locale: PropTypes.oneOf(['zh-cn', 'en']),
+  toolbar: PropTypes.bool,
   onCellClick: PropTypes.func,
 };
 
@@ -468,5 +550,6 @@ RMCalendar.defaultProps = {
   schedule: [],
   width: '100%',
   locale: 'zh-cn',
+  toolbar: true,
   onCellClick: null,
 };
