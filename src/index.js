@@ -30,7 +30,7 @@ export default class RMCalendar extends Component {
     this.handleCellClick = this._handleCellClick.bind(this);
     this.handleResize = this._handleResize.bind(this);
     this.handleChangeType = this._handleChangeType.bind(this);
-    this.handleChangeMonth = this._handleChangeMonth.bind(this);
+    this.handleChangeBoard = this._handleChangeBoard.bind(this);
   }
 
   static getDaysOfPerMonth(date) {
@@ -330,36 +330,40 @@ export default class RMCalendar extends Component {
     });
   }
 
-  _handleChangeMonth(go) {
+  _handleChangeBoard(go) {
     const TC = RMCalendar;
-    const { selectDate } = this.state;
+    const { selectDate, type } = this.state;
     const { year, month } = selectDate;
     const { firstDayOfWeek, schedule } = this.props;
-    let goDate = {
-      year,
-      month,
-      day: 1,
-    };
-    if (go === 1) {
-      goDate = {
-        year: month + 1 <= 11 ? year : year + 1,
-        month: month + 1 <= 11 ? month + 1 : 0,
+    // 切换下月
+    if (type === 'month') {
+      let goDate = {
+        year,
+        month,
         day: 1,
       };
+      if (go === 1) {
+        goDate = {
+          year: month + 1 <= 11 ? year : year + 1,
+          month: month + 1 <= 11 ? month + 1 : 0,
+          day: 1,
+        };
+      }
+      if (go === -1) {
+        goDate = {
+          year: month - 1 < 0 ? year - 1 : year,
+          month: month - 1 < 0 ? 11 : month - 1,
+          day: 1,
+        };
+      }
+      const newDate = new Date(goDate.year, goDate.month, goDate.day);
+      this.setState({
+        weekRowIndex: TC.getWeekRowOfBoard(newDate, firstDayOfWeek),
+        dataOfBoard: TC.getComputedDataOfBoard(newDate, firstDayOfWeek, schedule),
+        selectDate: goDate,
+      });
     }
-    if (go === -1) {
-      goDate = {
-        year: month - 1 < 0 ? year - 1 : year,
-        month: month - 1 < 0 ? 11 : month - 1,
-        day: 1,
-      };
-    }
-    const newDate = new Date(goDate.year, goDate.month, goDate.day);
-    this.setState({
-      weekRowIndex: TC.getWeekRowOfBoard(newDate, firstDayOfWeek),
-      dataOfBoard: TC.getComputedDataOfBoard(newDate, firstDayOfWeek, schedule),
-      selectDate: goDate,
-    });
+    // TODO: 切换下周
   }
 
   render() {
@@ -417,13 +421,13 @@ export default class RMCalendar extends Component {
                   className={cx('btn', 'up')}
                   role="button"
                   tabIndex="-5"
-                  onClick={() => this.handleChangeMonth(-1)}
+                  onClick={() => this.handleChangeBoard(-1)}
                 />
                 <div
                   className={cx('btn', 'down')}
                   role="button"
                   tabIndex="-6"
-                  onClick={() => this.handleChangeMonth(1)}
+                  onClick={() => this.handleChangeBoard(1)}
                 />
               </div>
             </div>
