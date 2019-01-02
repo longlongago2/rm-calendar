@@ -1,6 +1,5 @@
 const path = require('path');
 const chalk = require('chalk');
-const log = console.log;
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -9,7 +8,10 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const webpack = require('webpack');
 const localIP = require('quick-local-ip').getLocalIP4();
 
-module.exports = function(env, argv) {
+/* eslint-disable prefer-destructuring, no-console */
+const log = console.log;
+
+module.exports = function webpackConfig(env, argv) {
   // 打包方式
   const buildType = argv['build-type'];
 
@@ -17,9 +19,7 @@ module.exports = function(env, argv) {
   log(`
   ${chalk.bgBlue(' 构建信息：')}
 
-  ${chalk.green('mode')}: ${chalk.yellow(
-  env.production ? 'production' : 'development'
-)}
+  ${chalk.green('mode')}: ${chalk.yellow(env.production ? 'production' : 'development')}
   ${chalk.green('build-type')}: ${chalk.yellow(buildType)}
   `);
 
@@ -28,10 +28,10 @@ module.exports = function(env, argv) {
     require('postcss-flexbugs-fixes'),
     require('postcss-preset-env')({
       autoprefixer: {
-        flexbox: 'no-2009'
+        flexbox: 'no-2009',
       },
-      stage: 3
-    })
+      stage: 3,
+    }),
   ];
 
   const baseConfig = {
@@ -43,16 +43,16 @@ module.exports = function(env, argv) {
       builtAt: true,
       colors: true,
       errors: true,
-      errorDetails: true
+      errorDetails: true,
     },
     entry: {
-      'rm-calendar': './src/index.js'
+      'rm-calendar': './src/index.js',
     },
     module: {
       rules: [
         {
           test: /\.html$/,
-          loader: 'html-loader'
+          loader: 'html-loader',
         },
         {
           test: /\.(js|jsx)$/,
@@ -60,8 +60,8 @@ module.exports = function(env, argv) {
           options: {
             cacheDirectory: true,
             presets: [['react-app', { helpers: true }]],
-            plugins: buildType === 'dev' ? ['react-hot-loader/babel'] : []
-          }
+            plugins: buildType === 'dev' ? ['react-hot-loader/babel'] : [],
+          },
         },
         {
           test: /\.css$/,
@@ -69,16 +69,16 @@ module.exports = function(env, argv) {
             buildType !== 'dev' ? MiniCssExtractPlugin.loader : 'style-loader',
             {
               loader: 'css-loader',
-              options: { importLoaders: 1, modules: true }
+              options: { importLoaders: 1, modules: true },
             },
             {
               loader: 'postcss-loader',
               options: {
                 ident: 'postcss',
-                plugins: postcssPlugins
-              }
-            }
-          ]
+                plugins: postcssPlugins,
+              },
+            },
+          ],
         },
         {
           test: /\.less$/,
@@ -89,26 +89,26 @@ module.exports = function(env, argv) {
               options: {
                 importLoaders: 2,
                 modules: true,
-                localIdentName: '[path][name]__[local]--[hash:base64:5]'
-              }
+                localIdentName: '[path][name]__[local]--[hash:base64:5]',
+              },
             },
             {
               loader: 'postcss-loader',
               options: {
                 ident: 'postcss',
-                plugins: postcssPlugins
-              }
+                plugins: postcssPlugins,
+              },
             },
-            'less-loader'
-          ]
-        }
-      ]
+            'less-loader',
+          ],
+        },
+      ],
     },
     plugins: [
       new MiniCssExtractPlugin({
-        filename: '[name].css'
-      })
-    ]
+        filename: '[name].css',
+      }),
+    ],
   };
 
   // dist 配置
@@ -121,11 +121,11 @@ module.exports = function(env, argv) {
         filename: '[name].js',
         publicPath: '/',
         library: 'RMCalendar',
-        libraryTarget: 'var'
+        libraryTarget: 'var',
       },
       externals: {
-        react: 'React'
-      }
+        react: 'React',
+      },
     });
   }
 
@@ -139,37 +139,31 @@ module.exports = function(env, argv) {
         filename: '[name].js',
         publicPath: '/',
         library: 'RMCalendar',
-        libraryTarget: 'umd'
+        libraryTarget: 'umd',
       },
       externals: {
         react: {
           commonjs: 'react',
           commonjs2: 'react',
           amd: 'react',
-          root: 'React' // 指向全局变量
+          root: 'React', // 指向全局变量
         },
         moment: {
           commonjs: 'moment',
           commonjs2: 'moment',
           amd: 'moment',
-          root: 'moment' // 指向全局变量
+          root: 'moment', // 指向全局变量
         },
-        classnames: {
-          commonjs: 'classnames',
-          commonjs2: 'classnames',
-          amd: 'classnames',
-          root: 'classNames' // 指向全局变量
-        }
       },
       plugins: [
         new CopyWebpackPlugin([
           {
             from: './src/*.less',
             to: './theme-less',
-            flatten: true
-          }
-        ])
-      ]
+            flatten: true,
+          },
+        ]),
+      ],
     });
   }
 
@@ -196,31 +190,31 @@ module.exports = function(env, argv) {
       noInfo: true,
       open: true,
       overlay: true, // 当出现编译器错误或警告时，在浏览器中显示全屏覆盖层显示信息
-      disableHostCheck: true
+      disableHostCheck: true,
     },
     plugins: [
       new webpack.DefinePlugin({
         'process.env': {
           NODE_ENV: JSON.stringify('development'),
-          BABEL_ENV: JSON.stringify('development')
-        }
+          BABEL_ENV: JSON.stringify('development'),
+        },
       }),
       new CleanWebpackPlugin(['./example/dist'], { verbose: false }),
       new HtmlWebpackPlugin({
         template: 'example/index.html',
-        minify: false
+        minify: false,
       }),
-      new webpack.HotModuleReplacementPlugin()
+      new webpack.HotModuleReplacementPlugin(),
     ],
     output: {
       filename: '[name].bundle.js',
-      path: path.resolve(__dirname, 'example/dist')
+      path: path.resolve(__dirname, 'example/dist'),
     },
     resolve: {
       modules: [
         'node_modules',
-        path.join(__dirname, 'lib') // 作为依赖modules导入：可简写模块加载路径 ./lib路径可省略
-      ]
-    }
+        path.join(__dirname, 'lib'), // 作为依赖modules导入：可简写模块加载路径 ./lib路径可省略
+      ],
+    },
   });
 };

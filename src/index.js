@@ -7,30 +7,25 @@ import styles from './index.less';
 const cx = classNames.bind(styles);
 
 export default class RMCalendar extends Component {
-  constructor(props) {
-    super(props);
-    const {
-      date, type, firstDayOfWeek, schedule,
-    } = props; // 需要触发组件内部更新的props
-    this.calendar = React.createRef();
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDate();
-    const TC = RMCalendar;
-    this.state = {
-      prevProps: props, // 用于比对props变化,内部不宜setState,只在getDerivedStateFromProps中维护
-      type,
-      cellHeight: 0, // 单元格高度
-      weekRowIndex: TC.getWeekRowOfBoard(date, firstDayOfWeek), // 当前日期所在周在当前日历面板中的行数
-      dataOfHeader: TC.getDataOfHeader(firstDayOfWeek), // 面板列（周）数据
-      dataOfBoard: TC.getComputedDataOfBoard(date, firstDayOfWeek, schedule), // 合成面板数据集
-      selectDate: { year, month, day }, // 选中日期:默认是属性的date
-      dropdownlist: false,
-    };
-    this.handleCellClick = this._handleCellClick.bind(this);
-    this.handleResize = this._handleResize.bind(this);
-    this.handleChangeType = this._handleChangeType.bind(this);
-    this.handleChangeBoard = this._handleChangeBoard.bind(this);
+  static turnWeekNumToChar(num) {
+    switch (num) {
+    case 0:
+      return '日';
+    case 1:
+      return '一';
+    case 2:
+      return '二';
+    case 3:
+      return '三';
+    case 4:
+      return '四';
+    case 5:
+      return '五';
+    case 6:
+      return '六';
+    default:
+      return null;
+    }
   }
 
   static getDaysOfPerMonth(date) {
@@ -119,16 +114,18 @@ export default class RMCalendar extends Component {
     const TC = RMCalendar;
     const year = date.getFullYear();
     const month = date.getMonth();
-    const day = date.getDate();
     const daysOfPerMonth = TC.getDaysOfPerMonth(date);
     const preMonthNum = TC.getComposeDaysOfBoard(date, firstDayOfWeek, -1);
     const theMonthNum = TC.getComposeDaysOfBoard(date, firstDayOfWeek, 0);
     const nextMonthNum = TC.getComposeDaysOfBoard(date, firstDayOfWeek, 1);
     return new Array(42).fill(null).map((item, i) => {
+      // 验证数据范围：1900-2099
+      if (year < 1900 || year > 2099) return false;
+      // 上月数据
       if (i < preMonthNum) {
-        // 上月数据
         const preMonth = month - 1 >= 0 ? month - 1 : 11;
         const preMYear = month - 1 >= 0 ? year : year - 1;
+        if (preMYear < 1900) return false;
         return {
           day: daysOfPerMonth[preMonth] - preMonthNum + i + 1,
           month: preMonth,
@@ -136,8 +133,8 @@ export default class RMCalendar extends Component {
           monthIndex: -1,
         };
       }
+      // 本月数据
       if (i < theMonthNum + preMonthNum) {
-        // 本月数据
         const today = new Date();
         const thisYear = today.getFullYear();
         const thisMonth = today.getMonth();
@@ -151,14 +148,12 @@ export default class RMCalendar extends Component {
         if (thisDate === data.day && thisMonth === data.month && thisYear === data.year) {
           data.today = true; // 今日
         }
-        if (day === data.day) {
-          data.selectDate = true; // 组件date属性的日期
-        }
         return data;
       }
       // 下月数据
       const nextMonth = month + 1 <= 11 ? month + 1 : 0;
       const nextMYear = month + 1 <= 11 ? year : year + 1;
+      if (nextMYear > 2099) return false;
       return {
         day: i - 41 + nextMonthNum,
         month: nextMonth,
@@ -282,6 +277,33 @@ export default class RMCalendar extends Component {
     return null;
   }
 
+  constructor(props) {
+    super(props);
+    const { type, firstDayOfWeek, schedule } = props; // 需要触发组件内部更新的props
+    let { date } = props; // 需要触发组件内部更新的props
+    if (date.getFullYear() < 1900) date = new Date(1900, 0, 1); // date设置最小值
+    if (date.getFullYear() > 2099) date = new Date(2099, 11, 31); // date设置最大值
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    const TC = RMCalendar;
+    this.state = {
+      prevProps: props, // 用于比对props变化,内部不宜setState,只在getDerivedStateFromProps中维护
+      type,
+      cellHeight: 0, // 单元格高度
+      weekRowIndex: TC.getWeekRowOfBoard(date, firstDayOfWeek), // 当前日期所在周在当前日历面板中的行数
+      dataOfHeader: TC.getDataOfHeader(firstDayOfWeek), // 面板列（周）数据
+      dataOfBoard: TC.getComputedDataOfBoard(date, firstDayOfWeek, schedule), // 合成面板数据集
+      selectDate: { year, month, day }, // 选中日期:默认是属性的date
+      dropdownlist: false,
+    };
+    this.calendar = React.createRef();
+    this.handleCellClick = this._handleCellClick.bind(this);
+    this.handleResize = this._handleResize.bind(this);
+    this.handleChangeType = this._handleChangeType.bind(this);
+    this.handleChangeBoard = this._handleChangeBoard.bind(this);
+  }
+
   componentDidMount() {
     this.handleResize();
     window.addEventListener('resize', this.handleResize);
@@ -292,6 +314,7 @@ export default class RMCalendar extends Component {
   }
 
   _handleCellClick(item) {
+    if (!item || (item && item.year > 2099) || (item && item.year < 1900)) return; // 1900-2099
     const { onCellClick } = this.props;
     if (onCellClick) onCellClick(item);
     const TC = RMCalendar;
@@ -333,37 +356,38 @@ export default class RMCalendar extends Component {
   _handleChangeBoard(go) {
     const TC = RMCalendar;
     const { selectDate, type } = this.state;
-    const { year, month } = selectDate;
+    const { year, month, day } = selectDate;
     const { firstDayOfWeek, schedule } = this.props;
-    // 切换下月
+    let goMoment = moment({ year, month, day });
     if (type === 'month') {
-      let goDate = {
-        year,
-        month,
-        day: 1,
-      };
+      // 切换下月
       if (go === 1) {
-        goDate = {
-          year: month + 1 <= 11 ? year : year + 1,
-          month: month + 1 <= 11 ? month + 1 : 0,
-          day: 1,
-        };
+        goMoment = moment({ year, month, day }).add(1, 'months');
       }
       if (go === -1) {
-        goDate = {
-          year: month - 1 < 0 ? year - 1 : year,
-          month: month - 1 < 0 ? 11 : month - 1,
-          day: 1,
-        };
+        goMoment = moment({ year, month, day }).subtract(1, 'months');
       }
-      const newDate = new Date(goDate.year, goDate.month, goDate.day);
-      this.setState({
-        weekRowIndex: TC.getWeekRowOfBoard(newDate, firstDayOfWeek),
-        dataOfBoard: TC.getComputedDataOfBoard(newDate, firstDayOfWeek, schedule),
-        selectDate: goDate,
-      });
     }
-    // TODO: 切换下周
+    if (type === 'week') {
+      // 切换下周
+      if (go === 1) {
+        goMoment = moment({ year, month, day }).add(1, 'weeks');
+      }
+      if (go === -1) {
+        goMoment = moment({ year, month, day }).subtract(1, 'weeks');
+      }
+    }
+    const goDate = {
+      year: goMoment.get('year'),
+      month: goMoment.get('month'),
+      day: goMoment.get('date'),
+    };
+    const newDate = new Date(goDate.year, goDate.month, goDate.day);
+    this.setState({
+      weekRowIndex: TC.getWeekRowOfBoard(newDate, firstDayOfWeek),
+      dataOfBoard: TC.getComputedDataOfBoard(newDate, firstDayOfWeek, schedule),
+      selectDate: goDate,
+    });
   }
 
   render() {
@@ -393,6 +417,7 @@ export default class RMCalendar extends Component {
         dot: item.data,
       });
     };
+    const selectDateTime = new Date(selectDate.year, selectDate.month, selectDate.day);
     return (
       <>
         {toolbar && (
@@ -407,9 +432,9 @@ export default class RMCalendar extends Component {
                 <div className={styles.month}>{`${selectDate.month + 1}月`}</div>
                 <div className={styles['week-year']}>
                   <div>
-                    {`${moment(new Date(selectDate.year, selectDate.month, selectDate.day)).format(
-                      firstDayOfWeek === 0 ? 'ww' : 'WW',
-                    )}周`}
+                    {type === 'week'
+                      ? `第 ${moment(selectDateTime).format(firstDayOfWeek === 0 ? 'ww' : 'WW')} 周`
+                      : `周${RMCalendar.turnWeekNumToChar(selectDateTime.getDay())}`}
                   </div>
                   <div className={cx('year', { up: !dropdownlist, down: dropdownlist })}>
                     {`${selectDate.year}年`}
@@ -418,13 +443,17 @@ export default class RMCalendar extends Component {
               </div>
               <div className={styles['turn-btn']}>
                 <div
-                  className={cx('btn', 'up')}
+                  className={cx('btn', 'down', {
+                    disabled: selectDate.year <= 1900 && selectDate.month === 0,
+                  })}
                   role="button"
                   tabIndex="-5"
                   onClick={() => this.handleChangeBoard(-1)}
                 />
                 <div
-                  className={cx('btn', 'down')}
+                  className={cx('btn', 'up', {
+                    disabled: selectDate.year >= 2099 && selectDate.month === 11,
+                  })}
                   role="button"
                   tabIndex="-6"
                   onClick={() => this.handleChangeBoard(1)}
@@ -482,11 +511,31 @@ export default class RMCalendar extends Component {
               && [0, 1, 2, 3, 4, 5].map((row, i) => (
                 <tr key={row}>
                   {dataOfBoard.slice(i * 7, (i + 1) * 7).map(item => (
-                    <td
-                      key={item.day}
-                      title={`${item.year}-${item.month + 1}-${item.day}`}
-                      onClick={() => this.handleCellClick(item)}
-                    >
+                    <td key={item.day || Math.random()} onClick={() => this.handleCellClick(item)}>
+                      {item && (
+                        <div
+                          className={styles.cell}
+                          style={{
+                            height: `${cellHeight}px`,
+                          }}
+                        >
+                          <div className={styleCellBody(item)}>
+                            {item.day}
+                            {item.data && item.data.title && (
+                              <span className={styles.title}>{item.data.title}</span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            {type === 'week' && (
+              <tr>
+                {dataOfBoard.slice(weekRowIndex * 7, (weekRowIndex + 1) * 7).map(item => (
+                  <td key={item.day || Math.random()} onClick={() => this.handleCellClick(item)}>
+                    {item && (
                       <div
                         className={styles.cell}
                         style={{
@@ -500,31 +549,7 @@ export default class RMCalendar extends Component {
                           )}
                         </div>
                       </div>
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            {type === 'week' && (
-              <tr>
-                {dataOfBoard.slice(weekRowIndex * 7, (weekRowIndex + 1) * 7).map(item => (
-                  <td
-                    key={item.day}
-                    title={`${item.year}-${item.month + 1}-${item.day}`}
-                    onClick={() => this.handleCellClick(item)}
-                  >
-                    <div
-                      className={styles.cell}
-                      style={{
-                        height: `${cellHeight}px`,
-                      }}
-                    >
-                      <div className={styleCellBody(item)}>
-                        {item.day}
-                        {item.data && item.data.title && (
-                          <span className={styles.title}>{item.data.title}</span>
-                        )}
-                      </div>
-                    </div>
+                    )}
                   </td>
                 ))}
               </tr>
