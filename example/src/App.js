@@ -105,7 +105,7 @@ class App extends Component {
     return (
       <div className={style.container}>
         <RMCalendar
-          date={new Date()}
+          date={new Date(2900, 1, 1)}
           type={mode}
           width="100%"
           locale="zh-cn"

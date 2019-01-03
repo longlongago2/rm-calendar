@@ -2,8 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import moment from 'moment';
+import SwipeableViews from 'react-swipeable-views';
+import { virtualize } from 'react-swipeable-views-utils';
+import slideRenderer, { goDateBoard } from './slideRenderer';
 import styles from './index.less';
 
+const VirtualizeSwipeableViews = virtualize(SwipeableViews);
 const cx = classNames.bind(styles);
 
 export default class RMCalendar extends Component {
@@ -201,107 +205,108 @@ export default class RMCalendar extends Component {
     });
   }
 
-  static getDerivedStateFromProps(props, state) {
-    // 初始化和每次setState都会触发此钩子函数：可以用于监听props
-    const TC = RMCalendar;
-    let update = false;
-    // 活动属性：date,type,firstDayOfWeek,schedule 活动属性变化会触发一系列内部更新
-    const newState = { prevProps: Object.assign({}, state.prevProps) };
-    const propsDate = JSON.stringify({
-      year: props.date.getFullYear(),
-      month: props.date.getMonth(),
-      day: props.date.getDate(),
-    });
-    const prevPropsDate = JSON.stringify({
-      year: state.prevProps.date.getFullYear(),
-      month: state.prevProps.date.getMonth(),
-      day: state.prevProps.date.getDate(),
-    });
-    const propsSchedule = JSON.stringify(props.schedule);
-    const prevPropsSchedule = JSON.stringify(state.prevProps.schedule);
-    if (propsDate !== prevPropsDate) {
-      // 对比日期只精确到天，否则毫秒时间永远不相等
-      update = true;
-      // change prevProps
-      newState.prevProps.date = props.date;
-      // change state
-      newState.weekRowIndex = TC.getWeekRowOfBoard(props.date, props.firstDayOfWeek);
-      newState.dataOfBoard = TC.getComputedDataOfBoard(
-        props.date,
-        props.firstDayOfWeek,
-        props.schedule,
-      );
-      newState.selectDate = {
-        year: props.date.getFullYear(),
-        month: props.date.getMonth(),
-        day: props.date.getDate(),
-      };
-    }
-    if (props.type !== state.prevProps.type) {
-      update = true;
-      // change prevProps
-      newState.prevProps.type = props.type;
-      // change state
-      newState.type = props.type;
-    }
-    if (props.firstDayOfWeek !== state.prevProps.firstDayOfWeek) {
-      update = true;
-      // change prevProps
-      newState.prevProps.firstDayOfWeek = props.firstDayOfWeek;
-      // change state
-      const { year, month, day } = state.selectDate;
-      const selectDate = new Date(year, month, day);
-      newState.dataOfHeader = TC.getDataOfHeader(props.firstDayOfWeek);
-      newState.weekRowIndex = TC.getWeekRowOfBoard(selectDate, props.firstDayOfWeek);
-      newState.dataOfBoard = TC.getComputedDataOfBoard(
-        selectDate,
-        props.firstDayOfWeek,
-        props.schedule,
-      );
-    }
-    if (propsSchedule !== prevPropsSchedule) {
-      // 对比数组：转化成json字符串
-      update = true;
-      // change prevProps
-      newState.prevProps.schedule = props.schedule;
-      // change state
-      const { year, month, day } = state.selectDate;
-      const selectDate = new Date(year, month, day);
-      newState.dataOfBoard = TC.getComputedDataOfBoard(
-        selectDate,
-        props.firstDayOfWeek,
-        props.schedule,
-      );
-    }
-    if (update) return newState;
-    return null;
-  }
+  // static getDerivedStateFromProps(props, state) {
+  //   // 初始化和每次setState都会触发此钩子函数：可以用于监听props
+  //   const TC = RMCalendar;
+  //   let update = false;
+  //   // 活动属性：date,type,firstDayOfWeek,schedule 活动属性变化会触发一系列内部更新
+  //   const newState = { prevProps: Object.assign({}, state.prevProps) };
+  //   const propsDate = JSON.stringify({
+  //     year: props.date.getFullYear(),
+  //     month: props.date.getMonth(),
+  //     day: props.date.getDate(),
+  //   });
+  //   const prevPropsDate = JSON.stringify({
+  //     year: state.prevProps.date.getFullYear(),
+  //     month: state.prevProps.date.getMonth(),
+  //     day: state.prevProps.date.getDate(),
+  //   });
+  //   const propsSchedule = JSON.stringify(props.schedule);
+  //   const prevPropsSchedule = JSON.stringify(state.prevProps.schedule);
+  //   if (propsDate !== prevPropsDate) {
+  //     // 对比日期只精确到天，否则毫秒时间永远不相等
+  //     update = true;
+  //     // change prevProps
+  //     newState.prevProps.date = props.date;
+  //     // change state
+  //     newState.weekRowIndex = TC.getWeekRowOfBoard(props.date, props.firstDayOfWeek);
+  //     newState.dataOfBoard = TC.getComputedDataOfBoard(
+  //       props.date,
+  //       props.firstDayOfWeek,
+  //       props.schedule,
+  //     );
+  //     newState.selectDate = {
+  //       year: props.date.getFullYear(),
+  //       month: props.date.getMonth(),
+  //       day: props.date.getDate(),
+  //     };
+  //   }
+  //   if (props.type !== state.prevProps.type) {
+  //     update = true;
+  //     // change prevProps
+  //     newState.prevProps.type = props.type;
+  //     // change state
+  //     newState.type = props.type;
+  //   }
+  //   if (props.firstDayOfWeek !== state.prevProps.firstDayOfWeek) {
+  //     update = true;
+  //     // change prevProps
+  //     newState.prevProps.firstDayOfWeek = props.firstDayOfWeek;
+  //     // change state
+  //     const { year, month, day } = state.selectDate;
+  //     const selectDate = new Date(year, month, day);
+  //     newState.dataOfHeader = TC.getDataOfHeader(props.firstDayOfWeek);
+  //     newState.weekRowIndex = TC.getWeekRowOfBoard(selectDate, props.firstDayOfWeek);
+  //     newState.dataOfBoard = TC.getComputedDataOfBoard(
+  //       selectDate,
+  //       props.firstDayOfWeek,
+  //       props.schedule,
+  //     );
+  //   }
+  //   if (propsSchedule !== prevPropsSchedule) {
+  //     // 对比数组：转化成json字符串
+  //     update = true;
+  //     // change prevProps
+  //     newState.prevProps.schedule = props.schedule;
+  //     // change state
+  //     const { year, month, day } = state.selectDate;
+  //     const selectDate = new Date(year, month, day);
+  //     newState.dataOfBoard = TC.getComputedDataOfBoard(
+  //       selectDate,
+  //       props.firstDayOfWeek,
+  //       props.schedule,
+  //     );
+  //   }
+  //   if (update) return newState;
+  //   return null;
+  // }
 
   constructor(props) {
     super(props);
-    const { type, firstDayOfWeek, schedule } = props; // 需要触发组件内部更新的props
-    let { date } = props; // 需要触发组件内部更新的props
+    let { date } = props;
     if (date.getFullYear() < 1900) date = new Date(1900, 0, 1); // date设置最小值
     if (date.getFullYear() > 2099) date = new Date(2099, 11, 31); // date设置最大值
     const year = date.getFullYear();
     const month = date.getMonth();
     const day = date.getDate();
-    const TC = RMCalendar;
+    /* eslint-disable react/no-unused-state */
     this.state = {
       prevProps: props, // 用于比对props变化,内部不宜setState,只在getDerivedStateFromProps中维护
-      type,
-      cellHeight: 0, // 单元格高度
-      weekRowIndex: TC.getWeekRowOfBoard(date, firstDayOfWeek), // 当前日期所在周在当前日历面板中的行数
-      dataOfHeader: TC.getDataOfHeader(firstDayOfWeek), // 面板列（周）数据
-      dataOfBoard: TC.getComputedDataOfBoard(date, firstDayOfWeek, schedule), // 合成面板数据集
+      date,
+      type: props.type,
       selectDate: { year, month, day }, // 选中日期:默认是属性的date
+      cellHeight: 0, // 单元格高度
       dropdownlist: false,
+      index: 0, // 滑动面板默认页索引
+      switching: false, // 是否正在滑动
     };
     this.calendar = React.createRef();
     this.handleCellClick = this._handleCellClick.bind(this);
     this.handleResize = this._handleResize.bind(this);
     this.handleChangeType = this._handleChangeType.bind(this);
     this.handleChangeBoard = this._handleChangeBoard.bind(this);
+    this.handleChangePage = this._handleChangePage.bind(this);
+    this.handleSwitching = this._handleSwitching.bind(this);
   }
 
   componentDidMount() {
@@ -310,23 +315,22 @@ export default class RMCalendar extends Component {
   }
 
   componentWillUnmount() {
+    clearTimeout(this.timer);
     window.removeEventListener('resize', this.handleResize);
   }
 
   _handleCellClick(item) {
+    const { switching } = this.state;
+    if (switching) return; // 正在滑动避免触发click事件
     if (!item || (item && item.year > 2099) || (item && item.year < 1900)) return; // 1900-2099
     const { onCellClick } = this.props;
     if (onCellClick) onCellClick(item);
-    const TC = RMCalendar;
-    this.setState((state, props) => {
+    this.setState((state) => {
       const { year, month, day } = item;
-      const { year: _year, month: _month, day: _day } = state.selectDate;
-      if (year !== _year || month !== _month || day !== _day) {
-        const { firstDayOfWeek, schedule } = props;
-        const newDate = new Date(year, month, day);
+      const { year: selectYear, month: selectMonth, day: selectDay } = state.selectDate;
+      if (year !== selectYear || month !== selectMonth || day !== selectDay) {
         return {
-          weekRowIndex: TC.getWeekRowOfBoard(newDate, firstDayOfWeek),
-          dataOfBoard: TC.getComputedDataOfBoard(newDate, firstDayOfWeek, schedule),
+          index: state.index + item.monthIndex,
           selectDate: { year, month, day },
         };
       }
@@ -335,7 +339,7 @@ export default class RMCalendar extends Component {
   }
 
   _handleResize() {
-    const cellHeight = Math.floor(this.calendar.current.clientWidth / 7) - 10;
+    const cellHeight = Math.floor(this.calendar.current.querySelector('table').clientWidth / 7) - 10;
     this.setState((prevState) => {
       if (prevState.cellHeight !== cellHeight) {
         return {
@@ -354,74 +358,44 @@ export default class RMCalendar extends Component {
   }
 
   _handleChangeBoard(go) {
-    const TC = RMCalendar;
-    const { selectDate, type } = this.state;
-    const { year, month, day } = selectDate;
-    const { firstDayOfWeek, schedule } = this.props;
-    let goMoment = moment({ year, month, day });
-    if (type === 'month') {
-      // 切换下月
-      if (go === 1) {
-        goMoment = moment({ year, month, day }).add(1, 'months');
-      }
-      if (go === -1) {
-        goMoment = moment({ year, month, day }).subtract(1, 'months');
-      }
-    }
-    if (type === 'week') {
-      // 切换下周
-      if (go === 1) {
-        goMoment = moment({ year, month, day }).add(1, 'weeks');
-      }
-      if (go === -1) {
-        goMoment = moment({ year, month, day }).subtract(1, 'weeks');
-      }
-    }
-    const goDate = {
-      year: goMoment.get('year'),
-      month: goMoment.get('month'),
-      day: goMoment.get('date'),
-    };
-    const newDate = new Date(goDate.year, goDate.month, goDate.day);
+    const { index } = this.state;
+    const nextIndex = index + go;
+    const { selectDate } = goDateBoard(nextIndex, this);
     this.setState({
-      weekRowIndex: TC.getWeekRowOfBoard(newDate, firstDayOfWeek),
-      dataOfBoard: TC.getComputedDataOfBoard(newDate, firstDayOfWeek, schedule),
-      selectDate: goDate,
+      index: nextIndex, // 翻页
+      selectDate,
     });
   }
 
+  _handleChangePage(index) {
+    const { selectDate } = goDateBoard(index, this);
+    this.setState({ index, selectDate });
+  }
+
+  _handleSwitching(index, type) {
+    // 防止拖动时误触click事件
+    const { switching } = this.state;
+    if (type === 'move' && switching === false) {
+      this.setState({ switching: true });
+    }
+    if (type === 'end' && switching === true) {
+      this.timer = setTimeout(() => this.setState({ switching: false }), 300);
+    }
+  }
+
   render() {
+    const { firstDayOfWeek, toolbar, width } = this.props; // 非活动的属性，内部状态不随props变化而更新
     const {
-      width, locale, firstDayOfWeek, toolbar,
-    } = this.props; // 非活动的属性，内部状态不随props变化而更新
-    const {
-      type,
-      dataOfHeader,
-      dataOfBoard,
-      weekRowIndex,
-      selectDate,
-      cellHeight,
-      dropdownlist,
+      type, selectDate, dropdownlist, index,
     } = this.state;
-    const styleCellBody = (item) => {
-      const itemDate = {
-        year: item.year,
-        month: item.month,
-        day: item.day,
-      };
-      return cx('circle', {
-        today: item.today,
-        gray: item.monthIndex !== 0,
-        selected: JSON.stringify(selectDate) === JSON.stringify(itemDate) && !item.today,
-        'today-selected': JSON.stringify(selectDate) === JSON.stringify(itemDate) && item.today,
-        dot: item.data,
-      });
-    };
     const selectDateTime = new Date(selectDate.year, selectDate.month, selectDate.day);
     return (
-      <>
+      <div ref={this.calendar}>
         {toolbar && (
-          <div className={styles['top-bar']}>
+          <div
+            className={styles['top-bar']}
+            style={{ width: typeof width === 'number' ? `${width}px` : width }}
+          >
             <div className={styles.date}>
               <div
                 className={styles['opt-btn']}
@@ -444,7 +418,9 @@ export default class RMCalendar extends Component {
               <div className={styles['turn-btn']}>
                 <div
                   className={cx('btn', 'down', {
-                    disabled: selectDate.year <= 1900 && selectDate.month === 0,
+                    disabled:
+                      selectDate.year < 1900
+                      || (selectDate.year === 1900 && selectDate.month === 0),
                   })}
                   role="button"
                   tabIndex="-5"
@@ -452,7 +428,9 @@ export default class RMCalendar extends Component {
                 />
                 <div
                   className={cx('btn', 'up', {
-                    disabled: selectDate.year >= 2099 && selectDate.month === 11,
+                    disabled:
+                      selectDate.year > 2099
+                      || (selectDate.year === 2099 && selectDate.month === 11),
                   })}
                   role="button"
                   tabIndex="-6"
@@ -492,75 +470,23 @@ export default class RMCalendar extends Component {
             )}
           </div>
         )}
-        <table
-          ref={this.calendar}
-          className={styles.container}
-          cellSpacing="0"
-          cellPadding="5"
-          style={{ width: typeof width === 'number' ? `${width}px` : width }}
-        >
-          <thead>
-            <tr>
-              {Array.isArray(dataOfHeader)
-                && dataOfHeader.length > 0
-                && dataOfHeader.map(item => <td key={item.day}>{item[locale] || item['zh-cn']}</td>)}
-            </tr>
-          </thead>
-          <tbody>
-            {type === 'month'
-              && [0, 1, 2, 3, 4, 5].map((row, i) => (
-                <tr key={row}>
-                  {dataOfBoard.slice(i * 7, (i + 1) * 7).map(item => (
-                    <td key={item.day || Math.random()} onClick={() => this.handleCellClick(item)}>
-                      {item && (
-                        <div
-                          className={styles.cell}
-                          style={{
-                            height: `${cellHeight}px`,
-                          }}
-                        >
-                          <div className={styleCellBody(item)}>
-                            {item.day}
-                            {item.data && item.data.title && (
-                              <span className={styles.title}>{item.data.title}</span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            {type === 'week' && (
-              <tr>
-                {dataOfBoard.slice(weekRowIndex * 7, (weekRowIndex + 1) * 7).map(item => (
-                  <td key={item.day || Math.random()} onClick={() => this.handleCellClick(item)}>
-                    {item && (
-                      <div
-                        className={styles.cell}
-                        style={{
-                          height: `${cellHeight}px`,
-                        }}
-                      >
-                        <div className={styleCellBody(item)}>
-                          {item.day}
-                          {item.data && item.data.title && (
-                            <span className={styles.title}>{item.data.title}</span>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </td>
-                ))}
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </>
+        <VirtualizeSwipeableViews
+          slideCount={
+            selectDate.year > 2099 || selectDate.year < 1900 ? 1 : 0
+          }
+          resistance
+          enableMouseEvents
+          index={index}
+          onChangeIndex={this.handleChangePage}
+          onSwitching={this.handleSwitching}
+          slideRenderer={params => slideRenderer(params, this, RMCalendar)}
+        />
+      </div>
     );
   }
 }
 
+/* eslint-disable react/no-unused-prop-types */
 RMCalendar.propTypes = {
   date: PropTypes.instanceOf(Date),
   type: PropTypes.oneOf(['month', 'week']),

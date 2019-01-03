@@ -3,6 +3,7 @@
 .top-bar {
   padding: 5px 10px 0 10px;
   background: @thead-color;
+  box-sizing: border-box;
   .date {
     width: 100%;
     height: 30px;
@@ -191,7 +192,7 @@
             &.gray {
               opacity: 0.4;
             }
-            &.today-selected {
+            &.selective {
               color: lighten(@primary-color, 80%);
               background: @primary-color;
               box-shadow: 0 1px 3px 1px lighten(@primary-color, 30%);
