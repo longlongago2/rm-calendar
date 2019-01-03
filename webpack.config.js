@@ -69,7 +69,7 @@ module.exports = function webpackConfig(env, argv) {
             buildType !== 'dev' ? MiniCssExtractPlugin.loader : 'style-loader',
             {
               loader: 'css-loader',
-              options: { importLoaders: 1, modules: true },
+              options: { importLoaders: 1, modules: false },
             },
             {
               loader: 'postcss-loader',

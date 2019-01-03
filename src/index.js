@@ -373,14 +373,16 @@ export default class RMCalendar extends Component {
   }
 
   _handleSwitching(index, type) {
-    // 防止拖动时误触click事件
-    const { switching } = this.state;
-    if (type === 'move' && switching === false) {
-      this.setState({ switching: true });
-    }
-    if (type === 'end' && switching === true) {
-      this.timer = setTimeout(() => this.setState({ switching: false }), 300);
-    }
+    requestAnimationFrame(() => {
+      // 防止拖动时误触click事件
+      const { switching } = this.state;
+      if (type === 'move' && switching === false) {
+        this.setState({ switching: true });
+      }
+      if (type === 'end' && switching === true) {
+        this.timer = setTimeout(() => this.setState({ switching: false }), 300);
+      }
+    });
   }
 
   render() {

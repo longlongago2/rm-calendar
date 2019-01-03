@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { hot } from 'react-hot-loader';
 import RMCalendar from '../../src'; // TODO: dev
-// import RMCalendar from 'rm-calendar'; // TODO: test
+// import RMCalendar from '../../lib/rm-calendar'; // TODO: test
+// import '../../lib/rm-calendar.css';
 import style from './App.less';
 
 class App extends Component {
