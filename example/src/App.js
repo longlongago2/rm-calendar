@@ -107,6 +107,7 @@ class App extends Component {
       <div className={style.container}>
         <RMCalendar
           date={new Date()}
+          touch
           type={mode}
           width="100%"
           locale="zh-cn"
