@@ -3,129 +3,108 @@ import { hot } from 'react-hot-loader';
 import RMCalendar from '../../src'; // TODO: dev
 // import RMCalendar from '../../lib/rm-calendar'; // TODO: test
 // import '../../lib/rm-calendar.css';
-import style from './App.less';
+import { prefixInteger } from './utils';
+import styles from './App.less';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      mode: 'month',
-      schedule: [
-        {
-          date: '2018-12-01',
-          title: '班',
-          content: [
-            {
-              text: '07:00-11:00',
-            },
-            {
-              text: '14:00-18:00',
-            },
-          ],
-        },
-        {
-          date: '2018-12-02',
-          title: '休',
-          content: [
-            {
-              text: '休息',
-            },
-          ],
-        },
-        {
-          date: '2018-12-03',
-          content: [
-            {
-              text: '日程提醒',
-            },
-          ],
-        },
-        {
-          date: '2018-12-26',
-          title: '休',
-          content: [
-            {
-              text: '09:00-12:00',
-            },
-            {
-              text: '13:30-18:00',
-            },
-          ],
-        },
-        {
-          date: '2018-12-31',
-          title: '班',
-          content: [
-            {
-              text: '09:00-12:00',
-            },
-            {
-              text: '13:30-18:00',
-            },
-          ],
-        },
-      ],
+      selectData: '',
+      schedule: [],
     };
     this.handleCellClick = this._handleCellClick.bind(this);
-    this.handleModeChange = this._handleModeChange.bind(this);
-    this.handleUpdateSchedule = this._handleUpdateSchedule.bind(this);
+    this.handlePageChange = this._handlePageChange.bind(this);
   }
 
   _handleCellClick(item) {
-    const { mode } = this.state;
-    console.log(item, mode);
+    console.log(item);
+    this.setState({ selectData: item });
   }
 
-  _handleModeChange() {
-    this.setState(state => ({
-      mode: state.mode === 'month' ? 'week' : 'month',
-    }));
-  }
-
-  _handleUpdateSchedule() {
+  _handlePageChange(dateObj) {
     this.setState({
       schedule: [
         {
-          date: '2018-12-29',
-          title: '南京通道',
-          content: [
+          date: `${dateObj.year}-${prefixInteger(dateObj.month + 1)}-01`,
+          title: '休',
+          schedule: [
             {
-              text: '09:00-12:00',
+              text: '09:00-12:00：参加一个重要会议',
             },
             {
-              text: '13:30-18:00',
+              text: '13:30-18:00：陪领导视察',
             },
           ],
+        },
+        {
+          date: `${dateObj.year}-${prefixInteger(dateObj.month + 1)}-02`,
+          title: '班',
+        },
+        {
+          date: `${dateObj.year}-${prefixInteger(dateObj.month + 1)}-03`,
+          title: '班',
+        },
+        {
+          date: `${dateObj.year}-${prefixInteger(dateObj.month + 1)}-04`,
+          title: '班',
+        },
+        {
+          date: `${dateObj.year}-${prefixInteger(dateObj.month + 1)}-05`,
+          title: '班',
+          schedule: [
+            {
+              text: '小明明天结婚',
+            },
+            {
+              text: '小张今天晚上生日请客',
+            },
+          ],
+        },
+        {
+          date: `${dateObj.year}-${prefixInteger(dateObj.month + 1)}-06`,
+          title: '班',
+        },
+        {
+          date: `${dateObj.year}-${prefixInteger(dateObj.month + 1)}-07`,
+          title: '班',
+        },
+        {
+          date: `${dateObj.year}-${prefixInteger(dateObj.month + 1)}-08`,
+          title: '班',
+        },
+        {
+          date: `${dateObj.year}-${prefixInteger(dateObj.month + 1)}-09`,
+          title: '休',
         },
       ],
     });
   }
 
   render() {
-    const { mode, schedule } = this.state;
+    const { schedule, selectData } = this.state;
     return (
-      <div className={style.container}>
+      <div className={styles.container}>
         <RMCalendar
-          date={new Date()}
+          defaultDate={new Date()}
+          type="month"
           touch
-          type={mode}
           width="100%"
           locale="zh-cn"
           firstDayOfWeek={0}
           schedule={schedule}
           toolbar
           onCellClick={this.handleCellClick}
+          onPageChange={this.handlePageChange}
         />
-        <p>
-          <input
-            type="button"
-            value={`切换${mode === 'month' ? 'week' : 'month'}模式`}
-            onClick={this.handleModeChange}
-          />
-        </p>
-        <p>
-          <input type="button" value="更新schedule" onClick={this.handleUpdateSchedule} />
-        </p>
+        {selectData.data && selectData.data.schedule && (
+          <div className={styles.schedule}>
+            <div>{`${selectData.year} 年 ${selectData.month + 1} 月 ${selectData.day} 日，日程安排：`}</div>
+            {Array.isArray(selectData.data.schedule)
+              && selectData.data.schedule.length > 0
+              && selectData.data.schedule.map(item => <div key={item.text}>{item.text}</div>)}
+          </div>
+        )}
       </div>
     );
   }

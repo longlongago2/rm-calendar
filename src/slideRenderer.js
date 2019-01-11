@@ -42,21 +42,21 @@ export function goDateBoard(go, that, RMCalendar) {
   // 默认值
   if (go === 0) {
     return {
-      weekRowIndex: RMCalendar.getWeekRowOfBoard(date, firstDayOfWeek),
       dataOfBoard: RMCalendar.getComputedDataOfBoard(date, firstDayOfWeek, schedule),
       selectDate: {
         year: date.getFullYear(),
         month: date.getMonth(),
         day: date.getDate(),
       },
+      weekRowIndex: RMCalendar.getWeekRowOfBoard(date, firstDayOfWeek),
     };
   }
   // 切换面板之后的值
   const newDate = new Date(goDate.year, goDate.month, goDate.day);
   return {
-    weekRowIndex: RMCalendar.getWeekRowOfBoard(newDate, firstDayOfWeek),
     dataOfBoard: RMCalendar.getComputedDataOfBoard(newDate, firstDayOfWeek, schedule),
     selectDate: goDate,
+    weekRowIndex: RMCalendar.getWeekRowOfBoard(newDate, firstDayOfWeek),
   };
 }
 
@@ -77,7 +77,7 @@ export default function slideRenderer(slide, that, RMCalendar) {
       gray: item.monthIndex !== 0, // 置灰
       selected: JSON.stringify(selectDate) === JSON.stringify(itemDate) && !item.today, // 非当天日期选中
       selective: JSON.stringify(selectDate) === JSON.stringify(itemDate) && item.today, // 当天日期选中
-      dot: item.data,
+      dot: item.data && item.data.schedule,
     });
   };
   return (

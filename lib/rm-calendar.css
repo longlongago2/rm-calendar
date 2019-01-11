@@ -21,9 +21,11 @@
   opacity: 0.6;
 }
 .src-index__top-bar--2hnaT .src-index__date--1lVUM .src-index__opt-btn--2l2xi .src-index__month--1NvPv {
+  width: 55px;
   font: 25px/30px Arial, 'Microsoft YaHei', sans-serif;
   color: #000;
-  transform: scaleX(0.8);
+  text-align: right;
+  margin-right: 5px;
 }
 .src-index__top-bar--2hnaT .src-index__date--1lVUM .src-index__opt-btn--2l2xi .src-index__week-year--26xEM {
   height: 30px;
@@ -92,7 +94,7 @@
   padding: 10px 5px;
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   font-size: 12px;
   color: #202325;
