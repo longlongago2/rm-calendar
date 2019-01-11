@@ -1,6 +1,6 @@
 {
   "name": "rm-calendar",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "react mobile calendar",
   "main": "lib/rm-calendar.js",
   "directories": {
