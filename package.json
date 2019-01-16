@@ -1,5 +1,5 @@
 {
-  "name": "rm-calendar",
+  "name": "@longlongago2/rm_calendar",
   "version": "1.0.1",
   "description": "react mobile calendar",
   "main": "lib/rm-calendar.js",
@@ -10,7 +10,9 @@
   "scripts": {
     "dev": "webpack-dev-server --env.development --build-type=dev",
     "dist": "rimraf dist && webpack --env.production --build-type=dist",
-    "lib": "rimraf lib && webpack --env.production --build-type=lib"
+    "lib": "rimraf lib && webpack --env.production --build-type=lib",
+    "prepublish": "npm run dist && npm run lib",
+    "publish": "npm publish --access=public"
   },
   "repository": {
     "type": "git",
@@ -19,7 +21,8 @@
   "keywords": [
     "react",
     "mobile",
-    "calendar"
+    "calendar",
+    "schedule"
   ],
   "author": "longlongago2",
   "license": "MIT",
